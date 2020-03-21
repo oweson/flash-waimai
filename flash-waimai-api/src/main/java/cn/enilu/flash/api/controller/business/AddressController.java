@@ -34,12 +34,17 @@ public class AddressController extends BaseController {
     private IdsService idsService;
     @Autowired
     private PositionService positionService;
-    @RequestMapping(value = "/v1/users/{user_id}/addresses",method = RequestMethod.GET)
-    public Object address(@PathVariable("user_id")Long userId){
-        return Rets.success(mongoRepository.findAll(Address.class,"user_id",userId));
+
+    @RequestMapping(value = "/v1/users/{user_id}/addresses", method = RequestMethod.GET)
+    public Object address(@PathVariable("user_id") Long userId) {
+        return Rets.success(mongoRepository.findAll(Address.class, "user_id", userId));
     }
-    @RequestMapping(value = "/v1/users/{user_id}/addresses",method =  RequestMethod.POST)
-    public Object save(@PathVariable("user_id")Long userId){
+
+    /**
+     * 添加地址：过
+     */
+    @RequestMapping(value = "/v1/users/{user_id}/addresses", method = RequestMethod.POST)
+    public Object save(@PathVariable("user_id") Long userId) {
         City city = positionService.guessCity(getIp());
         Address address = getRequestPayload(Address.class);
         address.setUser_id(userId);
@@ -48,18 +53,25 @@ public class AddressController extends BaseController {
         mongoRepository.save(address);
         return Rets.success("添加地址成功");
     }
-    @RequestMapping(value = "/v1/users/${user_id}/addresses/${address_id}",method =  RequestMethod.POST)
-    public Object delete(@PathVariable("user_id")Long userId,@PathVariable("address_id") Long addressId){
-        mongoRepository.delete("addresses", Maps.newHashMap("user_id",userId,"id",addressId));
+
+    /**
+     * 2 根据用户id和地址id进行删除
+     */
+    @RequestMapping(value = "/v1/users/${user_id}/addresses/${address_id}", method = RequestMethod.POST)
+    public Object delete(@PathVariable("user_id") Long userId, @PathVariable("address_id") Long addressId) {
+        mongoRepository.delete("addresses", Maps.newHashMap("user_id", userId, "id", addressId));
         return Rets.success("删除地址成功");
     }
 
-    @RequestMapping(value="/address/{id}",method = RequestMethod.GET)
-    public Object get(@PathVariable Long id){
-        logger.info("id:{}",id);
+    /**
+     * 3 根据id进行查询
+     */
+    @RequestMapping(value = "/address/{id}", method = RequestMethod.GET)
+    public Object get(@PathVariable Long id) {
+        logger.info("id:{}", id);
         if (ToolUtil.isEmpty(id)) {
             throw new ApplicationException(BizExceptionEnum.REQUEST_NULL);
         }
-         return Rets.success(mongoRepository.findOne(Address.class,id));
+        return Rets.success(mongoRepository.findOne(Address.class, id));
     }
 }

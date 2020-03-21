@@ -43,24 +43,46 @@ public class MongoRepository {
     }
 
     public void delete(Long id, String collectionName) {
+        //Query.query(Criteria.where("id").is(id));
+        // 根据id进行删除
         mongoTemplate.remove(Query.query(Criteria.where("id").is(id)), collectionName);
     }
 
+    /**
+     * 根据批量key进行删除
+     */
     public void delete(String collectionName, Map<String, Object> keyValues) {
         mongoTemplate.remove(Query.query(criteria(keyValues)), collectionName);
     }
-    public void clear(Class klass){
-         mongoTemplate.dropCollection(klass);
-         mongoTemplate.createCollection(klass);
+
+    /**
+     * 清空集合的操作：删掉一个，创建一个空的；
+     * 根据类进行操作
+     */
+    public void clear(Class klass) {
+        mongoTemplate.dropCollection(klass);
+        mongoTemplate.createCollection(klass);
     }
-    public void clear(String collectionName){
+
+    /**
+     * 清空集合的操作：删掉一个，创建一个空的；
+     * 根据集合进行操作
+     */
+    public void clear(String collectionName) {
         mongoTemplate.dropCollection(collectionName);
         mongoTemplate.createCollection(collectionName);
     }
+
+    /**
+     * 更新数据
+     */
     public void update(BaseMongoEntity entity) {
         mongoTemplate.save(entity);
     }
 
+    /**
+     * 批量更新
+     */
     public UpdateResult update(Long id, String collectionName, Map<String, Object> keyValues) {
         Update update = null;
         for (Map.Entry<String, Object> entry : keyValues.entrySet()) {
@@ -88,13 +110,15 @@ public class MongoRepository {
     public <T, P> T findOne(Class<T> klass, P key) {
         return findOne(klass, "id", key);
     }
-    public <T> T findOne(Class<T> klass, Map<String,Object> params) {
+
+    public <T> T findOne(Class<T> klass, Map<String, Object> params) {
         Criteria criteria = criteria(params);
         if (criteria == null) {
             return mongoTemplate.findOne(Query.query(criteria), klass);
         }
         return null;
     }
+
     public <T> T findOne(Class<T> klass, String key, Object value) {
         return mongoTemplate.findOne(Query.query(Criteria.where(key).is(value)), klass);
     }
@@ -177,14 +201,15 @@ public class MongoRepository {
 
     /**
      * 查询指定位置附近的商家
+     *
      * @param x
      * @param y
      * @param collectionName
      * @param params
-     * @param miles 公里数
+     * @param miles          公里数
      * @return
      */
-    public GeoResults<Map> near(double x, double y, String collectionName, Map<String, Object> params,Integer miles) {
+    public GeoResults<Map> near(double x, double y, String collectionName, Map<String, Object> params, Integer miles) {
         Point location = new Point(x, y);
         NearQuery nearQuery = NearQuery.near(location).maxDistance(new Distance(miles, Metrics.MILES));
         if (params != null && !params.isEmpty()) {
@@ -193,13 +218,15 @@ public class MongoRepository {
         }
         try {
             return mongoTemplate.geoNear(nearQuery, Map.class, collectionName);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return null;
     }
+
     /**
      * 查询指定位置附近的商家，默认查询十公里范围内
+     *
      * @param x
      * @param y
      * @param collectionName
@@ -207,7 +234,7 @@ public class MongoRepository {
      * @return
      */
     public GeoResults<Map> near(double x, double y, String collectionName, Map<String, Object> params) {
-      return near(x,y,collectionName,params,10);
+        return near(x, y, collectionName, params, 10);
     }
 
     public long count(Class klass) {
@@ -217,7 +244,6 @@ public class MongoRepository {
     public long count(Class klass, Map<String, Object> params) {
         Criteria criteria = criteria(params);
         if (criteria == null) {
-
             return mongoTemplate.count(new Query(), klass);
         } else {
             return mongoTemplate.count(Query.query(criteria), klass);

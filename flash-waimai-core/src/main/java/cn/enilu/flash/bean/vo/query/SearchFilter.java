@@ -10,6 +10,7 @@ import java.util.Map;
  *
  * @author ：enilu
  * @date ：Created in 2019/6/30 16:02
+ * 搜索通用类；
  */
 public class SearchFilter {
     public enum Operator {

@@ -38,6 +38,7 @@ public class OrderController extends BaseController {
     public Object orders(@PathVariable("user_id")Long userId,@RequestParam("limit") Integer limit,
     @RequestParam("offset")Integer offset){
         Page<Order> page = new PageFactory<Order>().defaultPage();
+        // service-mongoTemplate
        return Rets.success(mongoRepository.queryPage(page, Order.class,Maps.newHashMap("user_id", userId)));
 
 

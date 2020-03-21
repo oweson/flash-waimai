@@ -44,7 +44,7 @@ public class FoodController extends BaseController {
     @Autowired
     private IdsService idsService;
     private Logger logger = LoggerFactory.getLogger(FoodController.class);
-
+// todo
     @RequestMapping(value = "addfood",method = RequestMethod.POST)
     public Object add(@Valid @ModelAttribute FoodVo foodVo) {
         logger.info(Json.toJson(foodVo));
@@ -107,6 +107,7 @@ public class FoodController extends BaseController {
         mongoRepository.update(menu);
         return Rets.success();
     }
+
     @RequestMapping(value="/v2/foods",method = RequestMethod.GET)
     public Object list(@RequestParam(value = "restaurant_id",required = false) Long restaurantId) {
         Page<Food> page = new PageFactory<Food>().defaultPage();
